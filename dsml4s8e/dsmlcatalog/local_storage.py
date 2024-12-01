@@ -26,7 +26,7 @@ class LoacalStorageCatalog(StorageCatalog):
     def is_valid(self) -> bool:
         return True
 
-    def get_outs_data_paths(self, data_keys: DataKyes) -> Dict[str, str]:
+    def make_outs_data_paths(self, data_keys: DataKyes) -> Dict[str, str]:
         return dict(
             [
                 (k, _k2storage_path(k, self.run_id, self.url_prefix))

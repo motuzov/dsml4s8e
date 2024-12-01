@@ -10,7 +10,7 @@ def test_dagster_home():
     dagcat = dagster_home.DagsterStorageCatalog(context)
     k = "simple_pipeline.data_load.op_nb_1.data1"
     dk = data_keys.DataKyes([k])
-    res = dagcat.get_outs_data_paths(dk)
+    res = dagcat.make_outs_data_paths(dk)
     home = os.environ["DAGSTER_HOME"]
     path = f"{home}/storage/0000/op_nb_1/data1"
     assert res[k] == path

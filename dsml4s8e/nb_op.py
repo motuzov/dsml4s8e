@@ -106,8 +106,9 @@ class NbOp:
             raise MissedInsParameters(empty_vals, ins)
         return paths_dict
 
-    # TODO: Rename get_catalog -> make_catalod (Method Injection)
-    def get_catalog(
+    # TODO: Rename make_catalog -> make_catalod (Method Injection)
+    # make_outs_data_paths -> make_outs_data_paths
+    def make_catalog(
         self, locals_: Dict[str, dict], storage_catalog: StorageCatalog
     ) -> NbDataCatalog:
         """
@@ -138,7 +139,7 @@ class NbOp:
         if "ins" in op_params:
             _ins_dict = self._get_ins_data_paths(locals_)
         if "outs" in op_params:
-            self._outs_dict = storage_catalog.get_outs_data_paths(
+            self._outs_dict = storage_catalog.make_outs_data_paths(
                 data_keys=self.nb_data_keys.outs,
             )
         return NbDataCatalog(

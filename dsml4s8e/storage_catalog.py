@@ -12,8 +12,8 @@ class StorageCatalog(ABC):
     def is_valid(self) -> bool: ...
 
     @abstractmethod
-    def get_outs_data_paths(self, data_keys: DataKyes) -> Dict[str, str]:
+    def make_outs_data_paths(self, data_keys: DataKyes) -> Dict[str, str]:
         """
-        Mapping data_keys to storage paths
+        make dict to map output data_keys to storage paths
         """
         ...
