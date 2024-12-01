@@ -1,5 +1,4 @@
-from dsml4s8e import storage_catalog as sc
-from dsml4s8e.data_keys import DataKyes
+from dsml4s8e import DataKyes, StorageCatalog
 from typing import Dict
 
 
@@ -14,7 +13,7 @@ def _k2storage_path(key: str, run_id: str, prefix: str) -> str:
     return f"{prefix}/{p}/{c}/{run_id}/{nb}/{e}"
 
 
-class LoacalStorageCatalog(sc.StorageCatalogABC):
+class LoacalStorageCatalog(StorageCatalog):
     def __init__(self, prefix: str, dagster_context):
         self.cdlc_stage = dagster_context.op_def.tags.get("cdlc_stage", "dev")
         self._prefix = f"{prefix}/{self.cdlc_stage}"

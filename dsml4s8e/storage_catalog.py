@@ -3,7 +3,7 @@ from typing import Dict
 from dsml4s8e.data_keys import DataKyes
 
 
-class StorageCatalogABC(ABC):
+class StorageCatalog(ABC):
     @abstractmethod
     def __init__(self, runid):
         self.runid = runid

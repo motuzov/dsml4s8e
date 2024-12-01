@@ -1,9 +1,7 @@
-from .. import storage_catalog as sc
-from dsml4s8e.data_keys import DataKyes
+from dsml4s8e import StorageCatalog, DataKyes
 from typing import Dict
 
 import os
-from pathlib import Path
 
 
 def _key2storage_path(key: str, prefix: str) -> str:
@@ -17,7 +15,7 @@ def _key2storage_path(key: str, prefix: str) -> str:
     return f"{prefix}/{nb}/{name}"
 
 
-class DagsterStorageCatalog(sc.StorageCatalogABC):
+class DagsterStorageCatalog(StorageCatalog):
     def __init__(self, dagster_context):
         dgd_home = os.environ["DAGSTER_HOME"]
         self._prefix = f"{dgd_home}/storage/{dagster_context.run.run_id}"

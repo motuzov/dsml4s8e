@@ -1,9 +1,6 @@
-from dsml4s8e import dotted_catalog_path
-from dsml4s8e.storage_catalog import StorageCatalogABC
-from dsml4s8e.data_keys import NotebookData, kye2pathvar_name
+from dsml4s8e import dotted_catalog_path, StorageCatalog, NotebookData, kye2pathvar_name
 
 import dagstermill
-
 from pathlib import Path
 from typing import Dict, Tuple
 from functools import cached_property
@@ -109,8 +106,9 @@ class NbOp:
             raise MissedInsParameters(empty_vals, ins)
         return paths_dict
 
+    # TODO: Rename get_catalog -> make_catalod (Method Injection)
     def get_catalog(
-        self, locals_: Dict[str, dict], storage_catalog: StorageCatalogABC
+        self, locals_: Dict[str, dict], storage_catalog: StorageCatalog
     ) -> NbDataCatalog:
         """
         This metod calls from notebook.
