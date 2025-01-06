@@ -1,6 +1,15 @@
-from dsml4s8e.define_job import define_job
+from dsml4s8e.job_composition import NbsJobComposition
 from dagstermill import local_output_notebook_io_manager
-from dagster import job, MetadataValue, config_mapping, Config, RunConfig, Definitions
+from dagster import (
+    job,
+    config_mapping,
+    Config,
+    RunConfig,
+    Definitions,
+    reconstructable,
+    execute_job,
+    DagsterInstance,
+)
 
 from pathlib import Path
 
@@ -9,62 +18,56 @@ _root_path = Path(__file__).parent.parent
 
 class SimplifiedConfig(Config):
     a: int
+    b: int
 
 
-configs = {"Nb0Cfg": type("Nb0Cfg", (Config,), {})}
-setattr(configs["Nb0Cfg"], "a", int)
+nbs_job_composition = NbsJobComposition(
+    root_path=_root_path,
+    nbs_sequence=[
+        "data_load/nb_0.ipynb",
+        "data_load/nb_1.ipynb",
+        "data_load/nb_2.ipynb",
+    ],
+)
 
 
 @config_mapping
 def simplified_config(val: SimplifiedConfig) -> RunConfig:
     return RunConfig(
         ops={
-            "nb": configs["Nb0Cfg"](a=val.a),
+            "nb_0": nbs_job_composition.ops_configs["nb_0"](a=val.a),
+            "nb_1": nbs_job_composition.ops_configs["nb_1"](a=val.a),
+            "nb_2": nbs_job_composition.ops_configs["nb_2"](b=val.b),
         }
     )
 
 
 @job(
-    name="simple_pipeline",
+    name="dagstermill_pipeline",
     tags={
         "cdlc_stage": "dev",
     },
     resource_defs={
         "output_notebook_io_manager": local_output_notebook_io_manager,
     },
-    metadata={
-        "nb": MetadataValue.notebook(
-            _root_path.joinpath(_root_path, "data_load/nb.ipynb")
-        )
-    },
+    metadata=nbs_job_composition.metadata,
     config=simplified_config,
 )
-def dagstermill_pipeline1():
-    define_job(
-        root_path=_root_path,
-        nbs_sequence=[
-            "data_load/nb.ipynb",
-            # "data_load/nb_1.ipynb",
-            # "data_load/nb_2.ipynb",
-        ],
-    )
-
-
-@job(name="simple_pipeline1")
-def dagstermill_pipeline2():
-    define_job(
-        root_path=_root_path,
-        nbs_sequence=[
-            "data_load/nb_0.ipynb",
-            "data_load/nb_1.ipynb",
-            "data_load/nb_2.ipynb",
-        ],
-    )
+def dagstermill_pipeline():
+    nbs_job_composition.do_compositioin()
 
 
 defs = Definitions(
-    jobs=[dagstermill_pipeline1, dagstermill_pipeline2],
+    jobs=[dagstermill_pipeline],
     resources={
         "output_notebook_io_manager": local_output_notebook_io_manager,
     },
 )
+
+
+if __name__ == "__main__":
+    job = reconstructable(dagstermill_pipeline)
+    res = execute_job(
+        job=job, instance=DagsterInstance.get(), run_config={"a": 110, "b": 22}
+    )
+    print(res.run_id)
